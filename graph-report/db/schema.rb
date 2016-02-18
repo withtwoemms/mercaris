@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160218003829) do
+ActiveRecord::Schema.define(version: 20160218234602) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "datasets", force: :cascade do |t|
     t.string   "contract"
-    t.date     "start_time"
+    t.string   "start_time"
     t.date     "end_time"
     t.string   "source"
     t.decimal  "price"
