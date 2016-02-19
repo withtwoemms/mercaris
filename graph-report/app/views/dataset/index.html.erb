@@ -1,28 +1,25 @@
 <div id="graph" style="width: 400px; height: 200px;">
 	<title>Highcharts Example</title>
 	<script>
-		var dataset;
+		var graphData;
 		var prices;
 		$(function() {
 			$.ajax({
 				url: "/dataset",
-				success: function(response) {
-					console.log(response);
-					dataset = response;
-					// prices_1 = mapRecord(dataset['series_1'], 'price', true)
-					// prices_2 = mapRecord(dataset['series_2'], 'price', true)
-					// prices = [prices_1, prices_2]
-					console.log(range(0,10))
-					prices = [mapRecord(dataset['series_1'], 'price', true),
-							  mapRecord(dataset['series_2'], 'price', true)]
-					graph(prices);
+				success: function(dataset) {
+					console.log(dataset);
+					s1Data = [mapRecordToKey(dataset['series_1'], 'price', true),
+							  mapRecordToKey(dataset['series_1'], 'start_time', false)]
+					s2Data = [mapRecordToKey(dataset['series_2'], 'price', true),
+							  mapRecordToKey(dataset['series_2'], 'start_time', false)]
+					graph([s1Data, s2Data]);
 				}
 			});
 		});
 
 		
-		function graph(prices) {
-			console.log(prices);
+		function graph(seriesData) {
+			console.log(seriesData);
 		    $('#graph').highcharts({
 		        chart: {
 		            type: 'line'
@@ -31,8 +28,9 @@
 		            text: 'Corn Prices Over Time'
 		        },
 		        xAxis: {
-		            // categories: range(0,mapRecord(dataset['series_1'], 'start_time', false).length),
-		            categories: mapRecord(dataset['series_1'], 'start_time', false),
+		        	type: 'datetime',
+		        	reversed: true,
+		            categories: seriesData[0][1],
 		            tickInterval: 30
 		        },
 		        yAxis: {
@@ -44,11 +42,11 @@
 		        series: [
 			        {
 			            name: 'Corn',
-			            data: prices[0]
+			            data: seriesData[0][0]
 			        }, 
 			        {
 			            name: 'Organic Corn',
-			            data: prices[1]
+			            data: seriesData[1][0]
 			        }
 			    ]
 		    });
@@ -64,7 +62,7 @@
 				return arr
 			}
 		}
-		function mapRecord(record, key, needInt) {
+		function mapRecordToKey(record, key, needInt) {
 			if (needInt==true) {
 				return record.map(function(obj){return parseInt(obj[key])})
 			} else {
