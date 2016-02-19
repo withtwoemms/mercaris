@@ -1,0 +1,129 @@
+<%= link_to "Refresh Dataset", '/dataset', method: :get, class: 'stylish-button'%>
+<div id="graph" class="center" style="width: 800px; height: 400px;">
+	<title>Highcharts Example</title>
+
+
+	<script>
+		var graphData;
+		var prices;
+		var dates;
+
+		$(function() {
+			$.ajax({
+				url: "/dataset",
+				success: function(dataset) {
+					console.log("DATASET: ", dataset);
+					graph(dataset)
+				}
+			});
+		});
+
+		function graph(seriesData) {
+			console.log("SERIES_DATA: ", seriesData)
+			s1Data = renamePriceKey(seriesData['series_1'], 'price', 'y')
+			s2Data = renamePriceKey(seriesData['series_2'], 'price', 'y')
+			dates = s1Data.map(function(obj){
+				arr = obj['start_time'].split('-')
+				return arr[0] + '-' + arr[arr.length-1]
+			});
+		    $('#graph').highcharts({
+		        chart: {
+		            type: 'area'
+		        },
+		        title: {
+		            text: 'Corn Prices Over Time'
+		        },
+		        xAxis: {
+		            title: {
+		                text: 'Time'
+		            },
+		        	reversed: true,
+		            categories: dates,
+		            tickInterval: 30,
+		            labels: {
+		                style: {
+		                    fontSize:'10px',
+		                }
+		            }
+		        },
+		        yAxis: {
+		            title: {
+		                text: 'Prices'
+		            },
+		            tickInterval: 10
+		        },
+		        plotOptions: {
+				    series: {
+				        marker: {
+				            enabled: true,
+				            symbol: 'circle',
+				            radius: 0.5
+				        }
+				    }
+				},
+				tooltip: {
+	                valuePrefix: '$',
+	                crosshairs: [true],
+	                shared: true,
+            		useHTML: true,
+            		headerFormat: '<small><b><em>{point.key}</em></b></small><table>',
+		            pointFormat: '<tr>' +
+			            			 '<td style="color: {series.color}">{series.name}:</td>' +
+			                		 '<td style="text-align: right"><b>{point.y}</b> ({point.source})</td>' +
+		                		 '</tr>',
+		            footerFormat: '</table>',
+		            valueDecimals: 2,
+	            },
+		        series: [
+			        {
+			            name: 'Corn',
+			            data: s1Data,
+			            zIndex: 2
+			        }, 
+			        {
+			            name: 'Organic Corn',
+			            data: s2Data,
+			            zIndex: 1
+			        }
+			    ]
+		    });
+		}
+
+
+		//-- HELPER FUNCTIONS ------------------------------------->>>
+		function renamePriceKey(series, oldKey, newKey) {
+			// brittle. Make more robust later
+			return series.map(function(obj) {
+				str = JSON.stringify(obj);
+				str = str.replace(oldKey, newKey);
+				newObj = JSON.parse(str);
+				newObj[newKey] = parseFloat(parseFloat(newObj[newKey]).toFixed(2))
+				return newObj
+			})
+		}
+		function range(a, b) {
+			if (a < b && (a%1===0) && (b%1===0)) {
+				arr = new Array(b-a)
+				for (var i=a; i<arr.length; i++) {
+					arr[i] = i
+				}
+				return arr
+			}
+		}
+		function mapRecordToKey(record, key, getPrice) {
+			if (getPrice==true) {
+				return record.map(function(obj){
+					return parseFloat(parseFloat(obj[key]).toFixed(2));
+				})
+			} else {
+				return record.map(function(obj){return obj[key]})
+			}
+		}
+		function dateDiff(d1, d2) {
+			var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+			return Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+		}
+		//--------------------------------------------------------->>>
+
+	</script>
+</div>
