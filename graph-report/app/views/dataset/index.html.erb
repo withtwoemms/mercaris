@@ -21,7 +21,13 @@
 
 		function graph(seriesData) {
 			console.log(seriesData);
-			dates = seriesData[0][1].map(function(str) {return new Date(str)});
+			dates_arr = seriesData[0][1].map(function(str) {
+				return str.split('-').map(function(s) {
+					return parseInt(s)
+				})
+			});
+			dates = dates_arr.map(function(arr) {new Date(Date.UTC(arr[2], arr[1], arr[0]))})
+			console.log(dates);
 		    $('#graph').highcharts({
 		        chart: {
 		            type: 'line'
@@ -30,7 +36,13 @@
 		            text: 'Corn Prices Over Time'
 		        },
 		        xAxis: {
-		        	type: 'datetime',
+		            dateTimeLabelFormats: { // don't display the dummy year
+		                month: '%b',
+		                year: '%b'
+		            },
+		            title: {
+		                text: 'Date'
+		            },
 		        	reversed: true,
 		            categories: dates,
 		            tickInterval: 30
