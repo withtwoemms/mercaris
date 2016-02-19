@@ -21,12 +21,10 @@
 
 		function graph(seriesData) {
 			console.log(seriesData);
-			dates_arr = seriesData[0][1].map(function(str) {
-				return str.split('-').map(function(s) {
-					return parseInt(s)
-				})
+			dates = seriesData[0][1].map(function(str) {
+				var darr = str.split('-').reverse()
+				return new Date(Date.UTC(darr[0], darr[1], darr[2]))
 			});
-			dates = dates_arr.map(function(arr) {new Date(Date.UTC(arr[2], arr[1], arr[0]))})
 			console.log(dates);
 		    $('#graph').highcharts({
 		        chart: {
@@ -67,6 +65,9 @@
 		}
 
 		//-- HELPER FUNCTIONS ------------------------------------->>>
+		function stringsToDates(series) {
+
+		}
 		function range(a, b) {
 			if (a < b && (a%1===0) && (b%1===0)) {
 				arr = new Array(b-a)
