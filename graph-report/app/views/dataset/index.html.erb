@@ -1,15 +1,18 @@
 <div id="graph" style="width: 400px; height: 200px;">
 	<title>Highcharts Example</title>
 	<script>
+		var data;
 		$(function() {
 			$.ajax({
 				url: "/dataset",
 				success: function(response) {
 					console.log(response);
+					dataset = response;
 				}
 			});
 		});
-		$(function () { 
+		$(function (dataset) {
+			var prices = dataset['series_1'].map(function(obj){return obj['price'];});
 		    $('#graph').highcharts({
 		        chart: {
 		            type: 'bar'
@@ -28,7 +31,7 @@
 		        series: [
 			        {
 			            name: 'Jane',
-			            data: [1, 0, 4]
+			            data: prices
 			        }, 
 			        {
 			            name: 'John',
