@@ -3,6 +3,8 @@
 	<script>
 		var graphData;
 		var prices;
+		var dates;
+
 		$(function() {
 			$.ajax({
 				url: "/dataset",
@@ -17,9 +19,9 @@
 			});
 		});
 
-		
 		function graph(seriesData) {
 			console.log(seriesData);
+			dates = seriesData[0][1].map(function(str) {return new Date(str)});
 		    $('#graph').highcharts({
 		        chart: {
 		            type: 'line'
@@ -30,7 +32,7 @@
 		        xAxis: {
 		        	type: 'datetime',
 		        	reversed: true,
-		            categories: seriesData[0][1],
+		            categories: dates,
 		            tickInterval: 30
 		        },
 		        yAxis: {
