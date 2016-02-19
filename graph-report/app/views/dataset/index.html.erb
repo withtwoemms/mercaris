@@ -1,44 +1,79 @@
 <div id="graph" style="width: 400px; height: 200px;">
 	<title>Highcharts Example</title>
 	<script>
-		var data;
+		var dataset;
+		var prices;
 		$(function() {
 			$.ajax({
 				url: "/dataset",
 				success: function(response) {
 					console.log(response);
 					dataset = response;
+					// prices_1 = mapRecord(dataset['series_1'], 'price', true)
+					// prices_2 = mapRecord(dataset['series_2'], 'price', true)
+					// prices = [prices_1, prices_2]
+					console.log(range(0,10))
+					prices = [mapRecord(dataset['series_1'], 'price', true),
+							  mapRecord(dataset['series_2'], 'price', true)]
+					graph(prices);
 				}
 			});
 		});
-		$(function (dataset) {
-			var prices = dataset['series_1'].map(function(obj){return obj['price'];});
+
+		
+		function graph(prices) {
+			console.log(prices);
 		    $('#graph').highcharts({
 		        chart: {
-		            type: 'bar'
+		            type: 'line'
 		        },
 		        title: {
-		            text: 'Fruit Consumption'
+		            text: 'Corn Prices Over Time'
 		        },
 		        xAxis: {
-		            categories: ['Apples', 'Bananas', 'Oranges']
+		            // categories: range(0,mapRecord(dataset['series_1'], 'start_time', false).length),
+		            categories: mapRecord(dataset['series_1'], 'start_time', false),
+		            tickInterval: 30
 		        },
 		        yAxis: {
 		            title: {
-		                text: 'Fruit eaten'
-		            }
+		                text: 'Prices'
+		            },
+		            tickInterval: 1
 		        },
 		        series: [
 			        {
-			            name: 'Jane',
-			            data: prices
+			            name: 'Corn',
+			            data: prices[0]
 			        }, 
 			        {
-			            name: 'John',
-			            data: [5, 7, 3]
+			            name: 'Organic Corn',
+			            data: prices[1]
 			        }
 			    ]
 		    });
-		});
+		}
+
+		//-- HELPER FUNCTIONS ------------------------------------->>>
+		function range(a, b) {
+			if (a < b && (a%1===0) && (b%1===0)) {
+				arr = new Array(b-a)
+				for (var i=a; i<arr.length; i++) {
+					arr[i] = i
+				}
+				return arr
+			}
+		}
+		function mapRecord(record, key, needInt) {
+			if (needInt==true) {
+				return record.map(function(obj){return parseInt(obj[key])})
+			} else {
+				return record.map(function(obj){return obj[key]})
+			}
+		}
+		function dateDiff(d1, d2) {
+			var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+			return Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+		}
 	</script>
 </div>
